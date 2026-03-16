@@ -13,8 +13,36 @@ router.post("/register", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-    const patients = await Patient.find();
-    res.json(patients);
+    try {
+        const patients = await Patient.find();
+        res.json(patients);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.get("/:id", async (req, res) => {
+    try {
+        const patient = await Patient.findById(req.params.id);
+        if (!patient) return res.status(404).json({ message: "Patient not found" });
+        res.json(patient);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.put("/:id/medicines", async (req, res) => {
+    try {
+        const patient = await Patient.findById(req.params.id);
+        if (!patient) return res.status(404).json({ message: "Patient not found" });
+        
+        patient.medicines = req.body.medicines;
+        await patient.save();
+        
+        res.json({ message: "Medicines updated successfully", patient });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 module.exports = router;

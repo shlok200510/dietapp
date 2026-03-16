@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AyurCare - Patient Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2b593f;
+            --primary-light: #447a5d;
+            --primary-dark: #1b3d29;
+            --accent: #d89f5b;
+            --bg-color: #f4f9f5;
+            --card-bg: #ffffff;
+            --text-main: #2c3e35;
+            --text-muted: #6b8273;
+            --border: #e0ebe4;
+            --hover-bg: #eaf1ec;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Bar */
+        .navbar {
+            background: white;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(43, 89, 63, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn-outline {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            background: transparent;
+        }
+
+        .nav-btn-outline:hover {
+            background: var(--hover-bg);
+        }
+
+        /* Main Content Grid */
+        .main-container {
+            padding: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 2.5rem;
+        }
+
+        .avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 2.2rem;
+            box-shadow: 0 10px 20px rgba(43, 89, 63, 0.2);
+        }
+
+        .page-title h1 {
+            font-size: 2.4rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.3rem;
+            line-height: 1.1;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            background: #e3f0e8;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Content Sections */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(43, 89, 63, 0.05);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: #fafcfa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .info-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Medicines Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .med-time {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fcf1e3;
+            color: #b37322;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state span {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Loader */
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            font-size: 1.2rem;
+            color: var(--primary);
+            gap: 10px;
+        }
+        
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(43, 89, 63, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #patientContent {
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .medicine-input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .medicine-input-row input {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+        }
+        
+        .btn-remove {
+            background: #ffe3e3;
+            color: #d84b5b;
+            border: none;
+            border-radius: 8px;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-container {
+                padding: 1.5rem;
+            }
+            .medicine-input-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+            .btn-remove {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+    <a href="dashboard.html" class="brand-logo">
+        Ayur<span>Care</span> <small style="font-size: 0.9rem; color: #6b8273; font-weight: 400; margin-left: 10px;">Admin</small>
+    </a>
+    <div class="nav-links">
+        <a href="dashboard.html" class="nav-btn nav-btn-outline">← Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="main-container">
+    <a href="dashboard.html" class="back-link">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back to Patients
+    </a>
+
+    <div id="loader" class="loader">
+        <div class="spinner"></div> Loading Patient Profile...
+    </div>
+
+    <div id="errorState" class="empty-state" style="display: none;">
+        <span>⚠️</span>
+        <h2 style="color: var(--text-main); margin-bottom: 10px;">Patient not found</h2>
+        <p>We couldn't load the details for this patient.</p>
+    </div>
+
+    <div id="patientContent">
+        <div class="page-header">
+            <div class="avatar-large" id="patientInitials">PT</div>
+            <div class="page-title">
+                <h1 id="patientName">Patient Name</h1>
+                <p>
+                    <span class="status-badge" id="patientId">ID: Loading...</span>
+                    Registered: <span id="patientDate">Loading...</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Personal Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>👤 Personal Information</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="info-list">
+                        <li class="info-item">
+                            <span class="info-label">Age</span>
+                            <span class="info-value" id="patientAge">-</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="info-label">Contact Number</span>
+                            <span class="info-value" id="patientPhone">-</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="info-label">Emergency Contact</span>
+                            <span class="info-value" id="patientEmergency">-</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="info-label">Residential Address</span>
+                            <span class="info-value" id="patientAddress">-</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Medical Details -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>🏥 Medical Details</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="info-list">
+                        <li class="info-item">
+                            <span class="info-label">Treatment Plan</span>
+                            <span class="info-value" id="patientTreatment" style="color: var(--primary-dark); font-weight: 600;">-</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="info-label">Allotted Room / Ward</span>
+                            <span class="info-value" id="patientRoom">-</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="info-label">Known Allergens</span>
+                            <span class="info-value" id="patientAllergens" style="color: #d84b5b;">-</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Assigned Medicines -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <h2>💊 Assigned Medicines</h2>
+                    <button class="nav-btn nav-btn-outline" style="padding: 6px 12px; font-size: 0.9rem;" onclick="openMedicinesModal()">Edit Medicines</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Medicine Name</th>
+                                <th>Dosage</th>
+                                <th>Time to Take</th>
+                            </tr>
+                        </thead>
+                        <tbody id="medicinesTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Medicines Modal -->
+    <div id="medicinesModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Medicines</h2>
+                <button class="close-btn" onclick="closeMedicinesModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalMedicinesList">
+                    <!-- Medicine rows inside modal -->
+                </div>
+                <button class="nav-btn nav-btn-outline" style="margin-top: 15px; width: 100%;" onclick="addMedicineRow()">+ Add Medicine</button>
+            </div>
+            <div class="modal-footer">
+                <button class="nav-btn nav-btn-outline" onclick="closeMedicinesModal()">Cancel</button>
+                <button class="nav-btn" style="background: var(--primary); color: white;" onclick="saveMedicines()" id="saveMedicinesBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const patientId = urlParams.get('id');
+
+    // DOM Elements
+    const loader = document.getElementById("loader");
+    const errorState = document.getElementById("errorState");
+    const content = document.getElementById("patientContent");
+    const medTableBody = document.getElementById("medicinesTableBody");
+
+    let currentMedicines = [];
+
+    // Dummy data fallback for UI testing without DB
+    const dummyPatients = [
+        { id: "1", name: "Rajesh Kumar", age: 45, room: "Ward A-12", treatment: "Panchakarma Therapy", phone: "+91 98765 43210", address: "123 MG Road, Mumbai", emergencyContact: "+91 99999 88888", allergens: "Dust", medicines: [{name: "Ashwagandha Churna", dosage: "1 tsp", time: "Morning & Night"}, {name: "Triphala", dosage: "2 tabs", time: "Before Bed"}] },
+        { id: "2", name: "Sunita Sharma", age: 38, room: "Room 104", treatment: "Abhyanga Massage", phone: "+91 87654 32109", address: "45 Park Street, Delhi", emergencyContact: "+91 77777 66666", allergens: "None", medicines: [{name: "Brahmi Vati", dosage: "1 tab", time: "Morning"}] },
+        { id: "3", name: "Anand Verma", age: 62, room: "Ward B-05", treatment: "Shirodhara", phone: "+91 76543 21098", address: "78 Lake View, Bangalore", emergencyContact: "+91 55555 44444", allergens: "Pollen", medicines: [] },
+        { id: "4", name: "Priya Patel", age: 29, room: "Room 201", treatment: "Detoxification", phone: "+91 65432 10987", address: "12 High Street, Ahmedabad", emergencyContact: "+91 33333 22222", allergens: "Peanuts", medicines: [{name: "Neem Capsules", dosage: "1 cap", time: "After Breakfast"}, {name: "Giloy Juice", dosage: "30 ml", time: "Morning Empty Stomach"}] }
+    ];
+
+    function getInitials(name) {
+        if(!name) return "PT";
+        return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return "Recently";
+        const d = new Date(dateString);
+        return isNaN(d.getTime()) ? "Recently" : d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function renderPatient(patient) {
+        // Hide loader, show content
+        loader.style.display = "none";
+        content.style.display = "block";
+
+        // Map data (handling both real DB keys and dummy keys)
+        document.getElementById("patientName").textContent = patient.name || "Unknown Patient";
+        document.getElementById("patientInitials").textContent = getInitials(patient.name);
+        document.getElementById("patientId").textContent = "ID: " + (patient._id || patient.id || "N/A");
+        document.getElementById("patientDate").textContent = formatDate(patient.createdAt);
+
+        document.getElementById("patientAge").textContent = patient.age ? patient.age + " yrs" : "N/A";
+        document.getElementById("patientPhone").textContent = patient.phone || "N/A";
+        document.getElementById("patientEmergency").textContent = patient.emergencyContact || "N/A";
+        document.getElementById("patientAddress").textContent = patient.address || "N/A";
+
+        document.getElementById("patientTreatment").textContent = patient.treatmentPlan || patient.treatment || "N/A";
+        document.getElementById("patientRoom").textContent = patient.roomNumber || patient.room || "N/A";
+        
+        const allergens = patient.allergens || "None reported";
+        document.getElementById("patientAllergens").textContent = allergens;
+        if (allergens.toLowerCase() === "none" || allergens.toLowerCase() === "none reported" || allergens.trim() === "") {
+            document.getElementById("patientAllergens").style.color = "var(--text-muted)";
+            document.getElementById("patientAllergens").textContent = "None reported";
+        }
+
+        // Render Medicines
+        currentMedicines = patient.medicines || [];
+        renderMedicinesTable(currentMedicines);
+    }
+
+    function renderMedicinesTable(medicines) {
+        medTableBody.innerHTML = "";
+        
+        if (!medicines || medicines.length === 0) {
+            medTableBody.innerHTML = `
+                <tr>
+                    <td colspan="3">
+                        <div class="empty-state" style="padding: 2rem;">
+                            <span>🍃</span>
+                            <p>No medicines currently assigned.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        } else {
+            medicines.forEach(med => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${med.name || 'Unknown'}</strong></td>
+                    <td>${med.dosage || '-'}</td>
+                    <td><span class="med-time">🕒 ${med.time || '-'}</span></td>
+                `;
+                medTableBody.appendChild(tr);
+            });
+        }
+    }
+
+    // Modal Functions
+    function openMedicinesModal() {
+        document.getElementById('medicinesModal').style.display = 'flex';
+        renderMedicinesModal();
+    }
+
+    function closeMedicinesModal() {
+        document.getElementById('medicinesModal').style.display = 'none';
+        
+        // Stop the close action from submitting any accidental form behavior
+    }
+
+    function renderMedicinesModal() {
+        const list = document.getElementById('modalMedicinesList');
+        list.innerHTML = '';
+        currentMedicines.forEach((med, index) => {
+            addMedicineRow(med, index);
+        });
+        if (currentMedicines.length === 0) {
+            addMedicineRow();
+        }
+    }
+
+    function addMedicineRow(med = {name: '', dosage: '', time: ''}, index = -1) {
+        const list = document.getElementById('modalMedicinesList');
+        const row = document.createElement('div');
+        row.className = 'medicine-input-row';
+        row.innerHTML = `
+            <input type="text" placeholder="Medicine Name" class="med-name-input" value="${med.name || ''}">
+            <input type="text" placeholder="Dosage" class="med-dosage-input" value="${med.dosage || ''}">
+            <input type="text" placeholder="Time" class="med-time-input" value="${med.time || ''}">
+            <button class="btn-remove" onclick="this.parentElement.remove()">✕</button>
+        `;
+        list.appendChild(row);
+    }
+
+    async function saveMedicines() {
+        const list = document.getElementById('modalMedicinesList');
+        const rows = list.querySelectorAll('.medicine-input-row');
+        const newMedicines = [];
+        
+        rows.forEach(row => {
+            const name = row.querySelector('.med-name-input').value.trim();
+            const dosage = row.querySelector('.med-dosage-input').value.trim();
+            const time = row.querySelector('.med-time-input').value.trim();
+            if (name) {
+                newMedicines.push({ name, dosage, time });
+            }
+        });
+
+        if (!patientId) return;
+        
+        const saveBtn = document.getElementById('saveMedicinesBtn');
+        const originalText = saveBtn.textContent;
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+
+        try {
+            const res = await fetch(`http://localhost:5000/api/patients/${patientId}/medicines`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ medicines: newMedicines })
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                currentMedicines = data.patient.medicines;
+                renderMedicinesTable(currentMedicines);
+                closeMedicinesModal();
+            } else {
+                updateDummyData(newMedicines);
+                closeMedicinesModal();
+            }
+        } catch (err) {
+            console.log('Using dummy data fallback for saving medicines', err);
+            updateDummyData(newMedicines);
+            closeMedicinesModal();
+        } finally {
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
+        }
+    }
+
+    function updateDummyData(newMedicines) {
+        const dummyPatient = dummyPatients.find(p => p.id == patientId);
+        if (dummyPatient) {
+            dummyPatient.medicines = newMedicines;
+            currentMedicines = newMedicines;
+            renderMedicinesTable(newMedicines);
+        }
+    }
+
+    async function init() {
+        if (!patientId) {
+            loader.style.display = "none";
+            errorState.style.display = "block";
+            return;
+        }
+
+        try {
+            // Try fetching from Real API first
+            const res = await fetch(`http://localhost:5000/api/patients/${patientId}`);
+            if (res.ok) {
+                const patient = await res.json();
+                renderPatient(patient);
+            } else {
+                // If not found in DB or server down, check dummy data fallback
+                throw new Error("Patient not found in DB");
+            }
+        } catch (err) {
+            console.log("Falling back to dummy data. Reason:", err.message);
+            const dummyPatient = dummyPatients.find(p => p.id == patientId);
+            if (dummyPatient) {
+                renderPatient(dummyPatient);
+            } else {
+                loader.style.display = "none";
+                errorState.style.display = "block";
+            }
+        }
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>

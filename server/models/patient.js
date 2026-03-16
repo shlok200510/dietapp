@@ -9,6 +9,11 @@ const PatientSchema = new mongoose.Schema({
     roomNumber: String,
     emergencyContact: String,
     allergens: String,
+    medicines: [{
+        name: String,
+        dosage: String,
+        time: String
+    }],
     createdAt: { type: Date, default: Date.now }
 });
 

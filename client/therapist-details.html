@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AyurCare - Therapist Timetable</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2b593f;
+            --primary-light: #447a5d;
+            --primary-dark: #1b3d29;
+            --accent: #d89f5b;
+            --bg-color: #f4f9f5;
+            --card-bg: #ffffff;
+            --text-main: #2c3e35;
+            --text-muted: #6b8273;
+            --border: #e0ebe4;
+            --hover-bg: #eaf1ec;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Bar */
+        .navbar {
+            background: white;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(43, 89, 63, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .nav-btn-outline {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            background: transparent;
+        }
+
+        .nav-btn-outline:hover {
+            background: var(--hover-bg);
+        }
+
+        .nav-btn-solid {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(43, 89, 63, 0.2);
+        }
+
+        .nav-btn-solid:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Main Content Grid */
+        .main-container {
+            padding: 2rem 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Therapist Header */
+        .therapist-header {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(43, 89, 63, 0.05);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .therapist-info-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .therapist-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 2rem;
+        }
+
+        .therapist-details h1 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .therapist-details p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-therapy {
+            background: #e3f0e8;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* Timetable Structure */
+        .timetable-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(43, 89, 63, 0.05);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .timetable-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafcfa;
+        }
+
+        .timetable-header h2 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+        }
+
+        .timetable-grid {
+            position: relative;
+            padding: 1rem 2rem 2rem 0;
+            min-height: 600px; /* Base height */
+        }
+
+        .time-row {
+            display: flex;
+            height: 80px; /* 1 hour = 80px */
+            border-bottom: 1px dashed var(--border);
+            position: relative;
+        }
+
+        .time-row:last-child {
+            border-bottom: none;
+        }
+
+        .time-label {
+            width: 100px;
+            text-align: right;
+            padding-right: 1.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transform: translateY(-50%);
+            margin-top: 0;
+        }
+
+        /* Session Slots Container */
+        .slots-container {
+            position: absolute;
+            top: 1rem; /* match padding-top of grid */
+            left: 100px; /* match time-label width */
+            right: 2rem;
+            bottom: 2rem;
+            pointer-events: none; /* Let clicks pass through to background */
+        }
+
+        .session-block {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            background: #e3f0e8;
+            border-left: 4px solid var(--primary);
+            border-radius: 6px;
+            padding: 10px 15px;
+            pointer-events: auto; /* Re-enable clicks for the blocks */
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.1s, box-shadow 0.1s;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .session-block:hover {
+            transform: scale(1.01);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .session-title {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .session-meta {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            opacity: 0.8;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(27, 61, 41, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .therapist-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+            .time-label {
+                width: 70px;
+                padding-right: 1rem;
+                font-size: 0.85rem;
+            }
+            .slots-container {
+                left: 70px;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+    <a href="dashboard.html" class="brand-logo">
+        Ayur<span>Care</span> <small style="font-size: 0.9rem; color: #6b8273; font-weight: 400; margin-left: 10px;">Admin</small>
+    </a>
+    <div class="nav-links">
+        <a href="therapist.html" class="nav-btn nav-btn-outline">👨‍⚕️ Therapists</a>
+        <a href="dashboard.html" class="nav-btn nav-btn-outline">📊 Dashboard</a>
+    </div>
+</div>
+
+<div class="main-container">
+    <a href="therapist.html" class="back-link">← Back to Therapists</a>
+
+    <!-- Therapist Header Info -->
+    <div class="therapist-header" id="therapistHeader">
+        <!-- Injected via JS -->
+        <div class="therapist-info-left" style="opacity: 0.5;">Loading...</div>
+    </div>
+
+    <!-- Timetable -->
+    <div class="timetable-container">
+        <div class="timetable-header">
+            <h2>Today's Schedule</h2>
+            <button class="nav-btn nav-btn-solid" onclick="openAddModal()">+ Add Session</button>
+        </div>
+
+        <div class="timetable-grid" id="timetableGrid">
+            <!-- Background Hour Rows (9 AM to 6 PM) -->
+            <div class="time-row"><div class="time-label">09:00 AM</div></div>
+            <div class="time-row"><div class="time-label">10:00 AM</div></div>
+            <div class="time-row"><div class="time-label">11:00 AM</div></div>
+            <div class="time-row"><div class="time-label">12:00 PM</div></div>
+            <div class="time-row"><div class="time-label">01:00 PM</div></div>
+            <div class="time-row"><div class="time-label">02:00 PM</div></div>
+            <div class="time-row"><div class="time-label">03:00 PM</div></div>
+            <div class="time-row"><div class="time-label">04:00 PM</div></div>
+            <div class="time-row"><div class="time-label">05:00 PM</div></div>
+            <div class="time-row"><div class="time-label">06:00 PM</div></div>
+
+            <!-- Absolute positioned blocks go here -->
+            <div class="slots-container" id="slotsContainer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Session Modal -->
+<div class="modal-overlay" id="sessionModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add Session</h2>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <form id="sessionForm">
+            <input type="hidden" id="sessionId">
+            
+            <div class="form-group">
+                <label>Patient ID (Optional)</label>
+                <input type="text" id="patientId" class="form-control" placeholder="e.g. PAT-1002">
+            </div>
+
+            <div class="form-group">
+                <label>Patient Name</label>
+                <input type="text" id="patientName" class="form-control" required placeholder="Enter patient name">
+            </div>
+
+            <div class="form-group">
+                <label>Treatment / Notes</label>
+                <input type="text" id="treatment" class="form-control" required placeholder="e.g. Abhyanga Massage">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Time</label>
+                    <input type="time" id="startTime" class="form-control" required min="09:00" max="18:00" value="09:00">
+                </div>
+                <div class="form-group">
+                    <label>End Time</label>
+                    <input type="time" id="endTime" class="form-control" required min="09:00" max="18:00" value="10:00">
+                </div>
+            </div>
+
+            <div class="modal-actions" id="modalActions">
+                <button type="button" class="nav-btn nav-btn-outline btn-danger" id="deleteBtn" style="display: none;" onclick="deleteSession()">Delete</button>
+                <div style="flex:1"></div>
+                <button type="button" class="nav-btn nav-btn-outline" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="nav-btn nav-btn-solid">Save Session</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- Data Mocking ---
+    const dummyTherapists = [
+        { id: 1, name: "Dr. Aditi Menon", therapy: "Panchakarma Therapy", phone: "+91 98765 11111" },
+        { id: 2, name: "Dr. Vikram Singh", therapy: "Abhyanga Massage", phone: "+91 87654 22222" },
+        { id: 3, name: "Dr. Sneha Nair", therapy: "Shirodhara", phone: "+91 76543 33333" },
+        { id: 4, name: "Dr. Rakesh Patil", therapy: "Detoxification", phone: "+91 65432 44444" },
+        { id: 5, name: "Dr. Maya Gupta", therapy: "Nasya Therapy", phone: "+91 54321 55555" }
+    ];
+
+    // Array holding today's sessions for this therapist
+    let currentSessions = [
+        { id: "s1", patientId: "PAT-1001", patientName: "Aarav Sharma", treatment: "Initial Consultation", startTime: "09:30", endTime: "10:30" },
+        { id: "s2", patientId: "PAT-0043", patientName: "Priya Patel", treatment: "Follow-up Massage", startTime: "12:00", endTime: "13:30" },
+        { id: "s3", patientId: "PAT-1092", patientName: "Rohan Verma", treatment: "Detox Session", startTime: "15:00", endTime: "16:00" }
+    ];
+
+    // --- Initialization ---
+    function getInitials(name) {
+        const cleanName = name.replace(/^Dr\.\s*/i, '');
+        return cleanName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function init() {
+        // Parse URL params for therapist ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const therapistId = parseInt(urlParams.get('id'));
+        
+        const therapist = dummyTherapists.find(t => t.id === therapistId);
+        
+        if (!therapist) {
+            document.getElementById('therapistHeader').innerHTML = `<h2>Therapist not found. Please return to the previous page.</h2>`;
+            return;
+        }
+
+        // Render Header
+        document.getElementById('therapistHeader').innerHTML = `
+            <div class="therapist-info-left">
+                <div class="therapist-avatar-large">${getInitials(therapist.name)}</div>
+                <div class="therapist-details">
+                    <h1>${therapist.name}</h1>
+                    <p>
+                        <span class="badge-therapy">${therapist.therapy}</span>
+                        <span>|</span>
+                        <span>📞 ${therapist.phone}</span>
+                    </p>
+                </div>
+            </div>
+            <button class="nav-btn nav-btn-outline" onclick="window.print()">🖨️ Print Schedule</button>
+        `;
+
+        renderTimetable();
+    }
+
+    // --- Timetable Logic ---
+    const WORK_START_HOUR = 9; // 9 AM
+    const PIXELS_PER_HOUR = 80; // Must match .time-row height in CSS
+    const PIXELS_PER_MINUTE = PIXELS_PER_HOUR / 60;
+
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    function renderTimetable() {
+        const container = document.getElementById('slotsContainer');
+        container.innerHTML = '';
+
+        const startOfDayMinutes = WORK_START_HOUR * 60;
+
+        currentSessions.forEach(session => {
+            const startMins = timeToMinutes(session.startTime);
+            const endMins = timeToMinutes(session.endTime);
+            
+            const durationMins = endMins - startMins;
+            const topOffsetMins = startMins - startOfDayMinutes;
+
+            const heightPx = durationMins * PIXELS_PER_MINUTE;
+            const topPx = topOffsetMins * PIXELS_PER_MINUTE;
+
+            const block = document.createElement('div');
+            block.className = 'session-block';
+            block.style.top = `${topPx}px`;
+            block.style.height = `${heightPx}px`;
+            
+            // Handle visual overlap logic here if needed, but keeping it simple for now
+            
+            // Format 24h to 12h for display
+            const formatTime = (time) => {
+                let [h, m] = time.split(':');
+                h = parseInt(h);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                return `${h}:${m} ${ampm}`;
+            };
+
+            const pIdText = session.patientId ? `<span style="background: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.75rem;">${session.patientId}</span>` : '';
+
+            block.innerHTML = `
+                <div class="session-title">${session.patientName} ${pIdText}</div>
+                <div class="session-meta">
+                    <span>🕒 ${formatTime(session.startTime)} - ${formatTime(session.endTime)}</span>
+                    <span>|</span>
+                    <span>🌿 ${session.treatment}</span>
+                </div>
+            `;
+            
+            block.onclick = () => openEditModal(session);
+            
+            container.appendChild(block);
+        });
+    }
+
+    // --- Modal Logic ---
+    const modal = document.getElementById('sessionModal');
+    const form = document.getElementById('sessionForm');
+
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Add New Session';
+        document.getElementById('deleteBtn').style.display = 'none';
+        form.reset();
+        document.getElementById('sessionId').value = ''; // empty means new
+        modal.classList.add('active');
+    }
+
+    function openEditModal(session) {
+        document.getElementById('modalTitle').textContent = 'Edit Session';
+        document.getElementById('deleteBtn').style.display = 'block';
+        
+        document.getElementById('sessionId').value = session.id;
+        document.getElementById('patientId').value = session.patientId || '';
+        document.getElementById('patientName').value = session.patientName;
+        document.getElementById('treatment').value = session.treatment;
+        document.getElementById('startTime').value = session.startTime;
+        document.getElementById('endTime').value = session.endTime;
+        
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    function deleteSession() {
+        if(confirm("Are you sure you want to delete this session?")) {
+            const id = document.getElementById('sessionId').value;
+            currentSessions = currentSessions.filter(s => s.id !== id);
+            renderTimetable();
+            closeModal();
+        }
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const start = document.getElementById('startTime').value;
+        const end = document.getElementById('endTime').value;
+
+        if (timeToMinutes(end) <= timeToMinutes(start)) {
+            alert('End time must be after start time.');
+            return;
+        }
+
+        const newSession = {
+            id: document.getElementById('sessionId').value || 's' + Date.now(),
+            patientId: document.getElementById('patientId').value,
+            patientName: document.getElementById('patientName').value,
+            treatment: document.getElementById('treatment').value,
+            startTime: start,
+            endTime: end
+        };
+
+        if (document.getElementById('sessionId').value) {
+            // Edit existing
+            const index = currentSessions.findIndex(s => s.id === newSession.id);
+            if (index > -1) {
+                currentSessions[index] = newSession;
+            }
+        } else {
+            // Add new
+            currentSessions.push(newSession);
+        }
+
+        renderTimetable();
+        closeModal();
+    });
+
+    // Close modal on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Run on load
+    window.onload = init;
+</script>
+
+</body>
+</html>

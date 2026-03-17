@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AyurCare - Therapists</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2b593f;
+            --primary-light: #447a5d;
+            --primary-dark: #1b3d29;
+            --accent: #d89f5b;
+            --bg-color: #f4f9f5;
+            --card-bg: #ffffff;
+            --text-main: #2c3e35;
+            --text-muted: #6b8273;
+            --border: #e0ebe4;
+            --hover-bg: #eaf1ec;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Bar */
+        .navbar {
+            background: white;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(43, 89, 63, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn-outline {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            background: transparent;
+        }
+
+        .nav-btn-outline:hover {
+            background: var(--hover-bg);
+        }
+
+        .nav-btn-solid {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(43, 89, 63, 0.2);
+        }
+
+        .nav-btn-solid:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content Grid */
+        .main-container {
+            padding: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* Therapists Grid Section */
+        .therapist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .therapist-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(43, 89, 63, 0.05);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .therapist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(43, 89, 63, 0.08);
+        }
+
+        .therapist-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .therapist-name {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .therapy-name {
+            display: inline-block;
+            background: #e3f0e8;
+            color: var(--primary);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-top: auto; /* pushes it to the bottom */
+        }
+
+        .contact-icon {
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 900px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .main-container {
+                padding: 1.5rem;
+            }
+            .therapist-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+    <a href="dashboard.html" class="brand-logo">
+        Ayur<span>Care</span> <small style="font-size: 0.9rem; color: #6b8273; font-weight: 400; margin-left: 10px;">Admin</small>
+    </a>
+    <div class="nav-links">
+        <a href="register.html" class="nav-btn nav-btn-outline">+ New Patient</a>
+        <a href="dashboard.html" class="nav-btn nav-btn-outline">📊 Dashboard</a>
+        <a href="login.html" class="nav-btn nav-btn-solid">Logout</a>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="page-header">
+        <div class="page-title">
+            <h1>Our Therapists</h1>
+            <p>Manage and view your active therapists.</p>
+        </div>
+    </div>
+
+    <!-- Therapists Grid -->
+    <div class="therapist-grid" id="therapistGrid">
+        <!-- Dynamic Content populated by JS -->
+    </div>
+</div>
+
+<script>
+    // 5 Dummy Therapists
+    const dummyTherapists = [
+        { id: 1, name: "Dr. Aditi Menon", therapy: "Panchakarma Therapy", phone: "+91 98765 11111" },
+        { id: 2, name: "Dr. Vikram Singh", therapy: "Abhyanga Massage", phone: "+91 87654 22222" },
+        { id: 3, name: "Dr. Sneha Nair", therapy: "Shirodhara", phone: "+91 76543 33333" },
+        { id: 4, name: "Dr. Rakesh Patil", therapy: "Detoxification", phone: "+91 65432 44444" },
+        { id: 5, name: "Dr. Maya Gupta", therapy: "Nasya Therapy", phone: "+91 54321 55555" }
+    ];
+
+    const gridContainer = document.getElementById("therapistGrid");
+
+    function getInitials(name) {
+        // Remove 'Dr. ' prefix for initials if present
+        const cleanName = name.replace(/^Dr\.\s*/i, '');
+        return cleanName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function renderTherapists(therapists) {
+        gridContainer.innerHTML = "";
+
+        therapists.forEach(therapist => {
+            const cardLink = document.createElement("a");
+            cardLink.href = `therapist-details.html?id=${therapist.id}`;
+            cardLink.style.textDecoration = 'none';
+            cardLink.style.color = 'inherit';
+
+            const card = document.createElement("div");
+            card.className = "therapist-card";
+            card.innerHTML = `
+                <div class="therapist-avatar">${getInitials(therapist.name)}</div>
+                <h3 class="therapist-name">${therapist.name}</h3>
+                <div class="therapy-name">${therapist.therapy}</div>
+                <div class="contact-info">
+                    <span class="contact-icon">📞</span>
+                    <span>${therapist.phone}</span>
+                </div>
+            `;
+            
+            cardLink.appendChild(card);
+            gridContainer.appendChild(cardLink);
+        });
+    }
+
+    // Initial render
+    renderTherapists(dummyTherapists);
+
+</script>
+
+</body>
+</html>

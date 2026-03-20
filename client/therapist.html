@@ -245,15 +245,6 @@
 </div>
 
 <script>
-    // 5 Dummy Therapists
-    const dummyTherapists = [
-        { id: 1, name: "Dr. Aditi Menon", therapy: "Panchakarma Therapy", phone: "+91 98765 11111" },
-        { id: 2, name: "Dr. Vikram Singh", therapy: "Abhyanga Massage", phone: "+91 87654 22222" },
-        { id: 3, name: "Dr. Sneha Nair", therapy: "Shirodhara", phone: "+91 76543 33333" },
-        { id: 4, name: "Dr. Rakesh Patil", therapy: "Detoxification", phone: "+91 65432 44444" },
-        { id: 5, name: "Dr. Maya Gupta", therapy: "Nasya Therapy", phone: "+91 54321 55555" }
-    ];
-
     const gridContainer = document.getElementById("therapistGrid");
 
     function getInitials(name) {
@@ -264,6 +255,11 @@
 
     function renderTherapists(therapists) {
         gridContainer.innerHTML = "";
+
+        if (therapists.length === 0) {
+            gridContainer.innerHTML = "<p>No therapists found.</p>";
+            return;
+        }
 
         therapists.forEach(therapist => {
             const cardLink = document.createElement("a");
@@ -288,8 +284,20 @@
         });
     }
 
-    // Initial render
-    renderTherapists(dummyTherapists);
+    async function fetchTherapists() {
+        try {
+            const response = await fetch("http://localhost:5000/api/therapists");
+            if (!response.ok) throw new Error("Network error");
+            const data = await response.json();
+            renderTherapists(data);
+        } catch (error) {
+            console.error("Failed to fetch therapists:", error);
+            gridContainer.innerHTML = "<p>Error loading therapists. Is backend running?</p>";
+        }
+    }
+
+    // Initial fetch
+    fetchTherapists();
 
 </script>
 

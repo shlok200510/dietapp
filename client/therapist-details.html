@@ -498,21 +498,8 @@
 </div>
 
 <script>
-    // --- Data Mocking ---
-    const dummyTherapists = [
-        { id: 1, name: "Dr. Aditi Menon", therapy: "Panchakarma Therapy", phone: "+91 98765 11111" },
-        { id: 2, name: "Dr. Vikram Singh", therapy: "Abhyanga Massage", phone: "+91 87654 22222" },
-        { id: 3, name: "Dr. Sneha Nair", therapy: "Shirodhara", phone: "+91 76543 33333" },
-        { id: 4, name: "Dr. Rakesh Patil", therapy: "Detoxification", phone: "+91 65432 44444" },
-        { id: 5, name: "Dr. Maya Gupta", therapy: "Nasya Therapy", phone: "+91 54321 55555" }
-    ];
-
-    // Array holding today's sessions for this therapist
-    let currentSessions = [
-        { id: "s1", patientId: "PAT-1001", patientName: "Aarav Sharma", treatment: "Initial Consultation", startTime: "09:30", endTime: "10:30" },
-        { id: "s2", patientId: "PAT-0043", patientName: "Priya Patel", treatment: "Follow-up Massage", startTime: "12:00", endTime: "13:30" },
-        { id: "s3", patientId: "PAT-1092", patientName: "Rohan Verma", treatment: "Detox Session", startTime: "15:00", endTime: "16:00" }
-    ];
+    let currentSessions = [];
+    let currentTherapistId = null;
 
     // --- Initialization ---
     function getInitials(name) {
@@ -520,35 +507,41 @@
         return cleanName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     }
 
-    function init() {
-        // Parse URL params for therapist ID
+    async function init() {
         const urlParams = new URLSearchParams(window.location.search);
-        const therapistId = parseInt(urlParams.get('id'));
+        currentTherapistId = urlParams.get('id');
         
-        const therapist = dummyTherapists.find(t => t.id === therapistId);
-        
-        if (!therapist) {
-            document.getElementById('therapistHeader').innerHTML = `<h2>Therapist not found. Please return to the previous page.</h2>`;
-            return;
-        }
+        try {
+            const res = await fetch(`http://localhost:5000/api/therapists/${currentTherapistId}`);
+            if (!res.ok) throw new Error("Therapist not found");
+            const therapist = await res.json();
 
-        // Render Header
-        document.getElementById('therapistHeader').innerHTML = `
-            <div class="therapist-info-left">
-                <div class="therapist-avatar-large">${getInitials(therapist.name)}</div>
-                <div class="therapist-details">
-                    <h1>${therapist.name}</h1>
-                    <p>
-                        <span class="badge-therapy">${therapist.therapy}</span>
-                        <span>|</span>
-                        <span>📞 ${therapist.phone}</span>
-                    </p>
+            // Render Header
+            document.getElementById('therapistHeader').innerHTML = `
+                <div class="therapist-info-left">
+                    <div class="therapist-avatar-large">${getInitials(therapist.name)}</div>
+                    <div class="therapist-details">
+                        <h1>${therapist.name}</h1>
+                        <p>
+                            <span class="badge-therapy">${therapist.therapy}</span>
+                            <span>|</span>
+                            <span>📞 ${therapist.phone}</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <button class="nav-btn nav-btn-outline" onclick="window.print()">🖨️ Print Schedule</button>
-        `;
+                <button class="nav-btn nav-btn-outline" onclick="window.print()">🖨️ Print Schedule</button>
+            `;
 
-        renderTimetable();
+            // Fetch sessions
+            const sessRes = await fetch(`http://localhost:5000/api/therapists/${currentTherapistId}/sessions`);
+            if (sessRes.ok) {
+                currentSessions = await sessRes.json();
+            }
+
+            renderTimetable();
+        } catch (e) {
+            document.getElementById('therapistHeader').innerHTML = `<h2>Error: ${e.message}</h2>`;
+        }
     }
 
     // --- Timetable Logic ---
@@ -640,16 +633,21 @@
         modal.classList.remove('active');
     }
 
-    function deleteSession() {
+    async function deleteSession() {
         if(confirm("Are you sure you want to delete this session?")) {
             const id = document.getElementById('sessionId').value;
-            currentSessions = currentSessions.filter(s => s.id !== id);
-            renderTimetable();
-            closeModal();
+            try {
+                await fetch(`http://localhost:5000/api/sessions/${id}`, { method: 'DELETE' });
+                currentSessions = currentSessions.filter(s => s.id !== id);
+                renderTimetable();
+                closeModal();
+            } catch(e) {
+                alert("Failed to delete session");
+            }
         }
     }
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const start = document.getElementById('startTime').value;
@@ -660,8 +658,7 @@
             return;
         }
 
-        const newSession = {
-            id: document.getElementById('sessionId').value || 's' + Date.now(),
+        const sessionData = {
             patientId: document.getElementById('patientId').value,
             patientName: document.getElementById('patientName').value,
             treatment: document.getElementById('treatment').value,
@@ -669,19 +666,35 @@
             endTime: end
         };
 
-        if (document.getElementById('sessionId').value) {
-            // Edit existing
-            const index = currentSessions.findIndex(s => s.id === newSession.id);
-            if (index > -1) {
-                currentSessions[index] = newSession;
-            }
-        } else {
-            // Add new
-            currentSessions.push(newSession);
-        }
+        const existingId = document.getElementById('sessionId').value;
 
-        renderTimetable();
-        closeModal();
+        try {
+            if (existingId) {
+                // Edit existing
+                const res = await fetch(`http://localhost:5000/api/sessions/${existingId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sessionData)
+                });
+                const updatedSession = await res.json();
+                const index = currentSessions.findIndex(s => s.id === existingId);
+                if (index > -1) currentSessions[index] = updatedSession;
+            } else {
+                // Add new
+                const res = await fetch(`http://localhost:5000/api/therapists/${currentTherapistId}/sessions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(sessionData)
+                });
+                const newSession = await res.json();
+                currentSessions.push(newSession);
+            }
+            renderTimetable();
+            closeModal();
+        } catch (error) {
+            alert("Failed to save session");
+            console.error(error);
+        }
     });
 
     // Close modal on outside click

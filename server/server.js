@@ -11,6 +11,11 @@ mongoose.connect("mongodb://127.0.0.1:27017/ayurcare")
 .catch(err => console.log(err));
 
 const patientRoutes = require("./routes/patientRoutes");
+const therapistRoutes = require("./routes/therapistRoutes");
+const sessionRoutes = require("./routes/sessionRoutes");
+
 app.use("/api/patients", patientRoutes);
+app.use("/api/therapists", therapistRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 app.listen(5000, () => console.log("Server running on port 5000"));
